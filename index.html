@@ -117,9 +117,10 @@
       For inquiries related to these Terms, you may contact the Provider at: lh140313@outlook.com
       By using any services, products, or content provided by the Provider, you acknowledge that you have read, understood, and agreed to these terms and conditions.
     </p>
-    <form id="termsForm" action="https://formsubmit.co/ajax/lh140313@outlook.com" method="POST" oninput="updateAcceptanceText()" onsubmit="return submitForm(event)">
+    <form id="termsForm" action="https://formsubmit.co/lh140313@outlook.com" method="POST" oninput="updateAcceptanceText()" onsubmit="return checkIpBlock()">
       <input type="hidden" name="_subject" value="New Terms and Conditions acceptance">
       <input type="hidden" name="_cc" value="1039778@lcps.org">
+      <input type="hidden" name="_blacklist" value="skibidi, sigma, balls, yummy, booty, butt, buttcheek">
       <input type="text" name="name" required placeholder="Your Name">
       <input type="hidden" name="message" id="hiddenMessage">
       <input type="hidden" name="_captcha" value="false">
@@ -137,7 +138,6 @@
   </div>
   <script>
     const blockedIps = ['123.45.67.89', '98.76.54.32']; // Add blocked IP addresses here
-    const blacklist = ['skibidi', 'sigma', 'balls', 'yummy', 'booty', 'butt', 'buttcheek']; // Add blacklisted words here
 
     function updateAcceptanceText() {
       const nameInput = document.querySelector('input[name="name"]');
@@ -147,44 +147,14 @@
       hiddenMessage.value = `I, ${nameInput.value}, accept the terms and conditions`;
     }
 
-    function checkIpBlock(ip) {
-      return blockedIps.includes(ip);
-    }
-
-    function checkBlacklist(name) {
-      return blacklist.some(word => name.toLowerCase().includes(word));
-    }
-
-    function submitForm(event) {
+    function checkIpBlock() {
       const userIp = document.getElementById('userIp').value;
-      const nameInput = document.querySelector('input[name="name"]').value;
-      const errorMessage = document.getElementById('errorMessage');
-
-      if (checkIpBlock(userIp)) {
+      if (blockedIps.includes(userIp)) {
+        const errorMessage = document.getElementById('errorMessage');
         errorMessage.textContent = 'Your IP address is blocked from submitting this form.';
         return false; // Prevent form submission
       }
-
-      if (checkBlacklist(nameInput)) {
-        errorMessage.textContent = 'Your name contains prohibited words.';
-        return false; // Prevent form submission
-      }
-
-      const formData = new FormData(document.getElementById('termsForm'));
-      fetch('https://formsubmit.co/ajax/lh140313@outlook.com', {
-        method: 'POST',
-        body: formData
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          window.location.href = 'https://lakshinhemachandran.github.io/thankyou.html';
-        } else {
-          alert('There was an error with your submission.');
-        }
-      })
-      .catch(error => console.error('Error:', error));
-      return false; // Prevent default form submission
+      return true; // Allow form submission
     }
 
     // Fetch user IP address and set it in the hidden input field
